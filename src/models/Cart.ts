@@ -1,6 +1,6 @@
-import type { Product } from "./product.ts";
+import type { Product } from "./Product.ts";
 
-interface CartItem {
+export interface CartItem {
     product: Product,
     quantity: number
 }

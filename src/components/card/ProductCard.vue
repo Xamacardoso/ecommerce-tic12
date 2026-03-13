@@ -1,14 +1,35 @@
 <template>
-    <article>
-      <h1>{{ product.name }}</h1>
-      <p>Preço: R$ {{ product.price.toFixed(2).replace('.', ',') }}</p>
-      <p>Categoria: {{ product.category.name }}</p>
-      <button @click="addToCart(product)">Adicionar ao carrinho</button>
-    </article>
+    <Card
+        :style="{
+            width: '100%',
+            minWidth: '200px',
+            maxWidth: '320px',
+        }"
+        class="p-4 shadow-lg rounded-xl"
+    >
+        <template #header>
+            <img src="https://picsum.photos/200" alt="Foto do produto">
+        </template>
+
+        <template #title>
+            <h1>{{ product.name }}</h1>
+        </template>
+
+        <template #content>
+            <p>Preço: R$ {{ product.price.toFixed(2).replace('.', ',') }}</p>
+            <p>Categoria: {{ product.category.name }}</p>
+        </template>
+
+        <template #footer>
+            <div class="flex flex-row-reverse">
+                <Button label="Adicionar ao carrinho" @click="addToCart(product)" />
+            </div>
+        </template>
+    </Card>
 </template>
 
 <script lang="ts">
-import { Product } from '@/models/product.ts';
+import { Product } from '@/models/Product.ts';
 import { Category } from '@/models/Category.ts';
 import { defineComponent, type PropType } from 'vue';
 
@@ -32,5 +53,3 @@ export default defineComponent({
     
 })
 </script>
-
-<style></style>

@@ -5,10 +5,14 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
+import setPrimeVue from './modules/primevue.module'
 
-const app = createApp(App)
+const app = createApp(App);
 
-app.use(createPinia())
-app.use(router)
+app.use(createPinia());
+app.use(router);
 
-app.mount('#app')
+// modulo separado para as configs do primevue
+setPrimeVue(app);
+
+app.mount('#app');
