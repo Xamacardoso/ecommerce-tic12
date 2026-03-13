@@ -1,9 +1,10 @@
 
 // logica
 <script lang="ts">
-  import { Product } from './models/product.model';
-  import ProductCard from './components/card/ProductCard.vue';
-  import { Cart } from './models/cart.model';
+import { Product } from './models/product.ts';
+import { Category } from './models/Category.ts';
+import ProductCard from './components/card/ProductCard.vue';
+import { Cart } from './models/Cart.ts';
 
   export default {
     // objetos com partes reativas do componente
@@ -11,8 +12,8 @@
       return {
         cart: new Cart(),
         products: [
-          new Product("Guitarra", "Guitarra massa dms", 20.33, 0.2),
-          new Product("Violão", "Violão massa dms", 2023.33, 0.1),
+          new Product("Guitarra", "Guitarra massa dms", 20.33, new Category(1, "Instrumentos musicais")),
+          new Product("Violão", "Violão massa dms", 2023.33, new Category(1, "Instrumentos musicais")),
         ]
       }
     },
@@ -20,23 +21,15 @@
     // metodos q podem ser chamados pelo template
     methods: {
       addItem(product: Product) {
-        const productAlreadyExists = this.cart
-          .products
-          .some((item) => item.product.title === product.title);
-        
-        // se o produto ja existe no carrinho, incrementa a quantidade, senao adiciona o produto ao carrinho
-        if (productAlreadyExists) {
-          this.cart.products
-            .find((item) => item.product.title === product.title)!.quantity += 1; 
-        } else {
-          this.cart.products.push({ product, quantity: 1 });
-        }
-
-        this.cart.totalItems += 1;
+        this.cart.addItem(product);
       },
 
-      decItem() {
-        this.cart.totalItems -= 1;
+      decItem(product: Product) {
+        this.cart.decrementItem(product);
+      },
+
+      removeItem(product: Product) {
+        this.cart.removeItem(product);
       }
     },
 
@@ -58,10 +51,13 @@
   <div>
     <h1>Carrinho</h1>
     <div v-for="item in cart.products">
-      <h3>{{ item.product.title }}</h3>
-      <p>Quantidade: {{ item.quantity }}</p>
+      <h3>{{ item.product.name }} x{{ item.quantity }}</h3>
+      <button @click="addItem(item.product)">+</button>
+      <button @click="decItem(item.product)">-</button>
+      <button @click="removeItem(item.product)">Remover</button>
     </div>
     <p>Total de itens: {{ cart.totalItems }}</p>
+    <p>Valor total no carrinho: R$ {{ cart.getTotalItemsValue().toFixed(2).replace('.', ',') }}</p>
   </div>
 </template>
 
