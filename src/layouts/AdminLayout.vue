@@ -10,13 +10,15 @@
 
     <!-- Área de Conteúdo -->
     <main class="flex-1 p-8">
+      <Breadcrumb :home="home" :model="breadcrumbs" class="mb-4 bg-transparent border-none p-0"/>
       <RouterView />
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useRoute } from 'vue-router'; // Para saber a rota atual
 
 const items = ref([
   {
@@ -40,4 +42,22 @@ const items = ref([
       ]
   }
 ]);
+
+const route = useRoute();
+const home = ref({
+  icon: 'pi pi-home',
+  to: '/admin'
+});
+
+// Logica para transformar rotas em itens de breadcrumb
+const breadcrumbs = computed(() => {
+  return route.matched
+    .filter(path => path.name) // filtrando só as que tem nome
+    .map(path => {
+      return {
+        label: String(path.name).charAt(0).toUpperCase() + String(path.name).slice(1), // formatando o nome
+        route: path.path
+      }
+    });
+});
 </script>

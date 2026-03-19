@@ -20,6 +20,7 @@
 
         </Menubar>
         <div class="flex-1">
+            <Breadcrumb :home="home" :model="breadcrumbs" class="mb-4 bg-transparent border-none p-0"/>
             <RouterView />
         </div>
     </div>
@@ -27,9 +28,10 @@
 
 <script setup lang="ts">
 // um script setup é um script que é executado no momento da montagem do componente
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useCartStore } from '@/stores/cartStore';
 import { storeToRefs } from 'pinia';
+import { useRoute } from 'vue-router';
 
 const cartStore = useCartStore();
 const { totalItems, cartTotalValue } = storeToRefs(cartStore);
@@ -39,6 +41,23 @@ const items = ref([
     { label: 'Produtos', icon: 'pi pi-box', route: '/products' },
 ]);
 
+const route = useRoute();
+const home = ref({
+  icon: 'pi pi-home',
+  to: '/'
+});
+
+// Logica para transformar rotas em itens de breadcrumb
+const breadcrumbs = computed(() => {
+  return route.matched
+    .filter(path => path.name) // filtrando só as que tem nome
+    .map(path => {
+      return {
+        label: String(path.name).charAt(0).toUpperCase() + String(path.name).slice(1), // formatando o nome
+        route: path.path
+      }
+    });
+});
 </script>
 
 <style></style>

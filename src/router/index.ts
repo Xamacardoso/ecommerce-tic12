@@ -34,6 +34,9 @@ const router = createRouter({
         {
           path: 'checkout',
           name: 'cart-checkout',
+          meta: {
+            auth: true // precisa estar logado para acessar
+          },
           component: CartCheckout
         },
       ]
@@ -65,23 +68,29 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   if (to?.meta?.auth) {
     // Mock de token para implementar os guards depois
-    const token = {
+    const userSession = {
       isAuth: true,
       role: 'admin'
     }
 
-    if (token.isAuth) {
-      const roles = to.meta.role as string[];
-      if (roles.some((role) => role === token.role)) {
-        next();
-        return;
-      } else {
-        next('/login');
-        return;
-      }
+    if (userSession.isAuth) {
+      if (to.meta.role) {
+        const requiredRoles = to.meta.role as string[];
+        if (requiredRoles.includes(userSession.role)) {
+          next();
+          return;
+        } else {
+          next('/');
+          return;
+        }
+      } 
+      
+      // Se exige auth mas não exige role (checkout), deixa passar
+      next();
+      return;
 
     } else {
-      next('/login');
+      next('/');
       return;
     }
   } 

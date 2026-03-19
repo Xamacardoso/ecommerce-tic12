@@ -1,5 +1,5 @@
 import type { App } from "vue";
-import { Button, Card, InputNumber, DataView, ConfirmationService, Menubar, Menu } from 'primevue'
+import { Button, Card, InputNumber, DataView, ConfirmationService, Menubar, Menu, DataTable, Column, Breadcrumb } from 'primevue'
 import ConfirmDialog from "primevue/confirmdialog";
 import PrimeVue from "primevue/config";
 import Aura from '@primeuix/themes/aura';
@@ -25,6 +25,9 @@ export default function setPrimeVue(app: App) : void {
     app.component("ConfirmDialog", ConfirmDialog);
     app.component("Menubar", Menubar);
     app.component("Menu", Menu);
+    app.component("DataTable", DataTable);
+    app.component("Column", Column);
+    app.component("Breadcrumb", Breadcrumb);
 
     // usa o badge
     app.directive("badge", BadgeDirective);
