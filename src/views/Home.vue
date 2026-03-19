@@ -6,12 +6,13 @@ import { Category } from '@/models/Category.ts';
 import ProductCard from '@/components/card/ProductCard.vue';
 import CartItem from '@/components/card/CartItem.vue';
 import { Cart } from '@/models/Cart.ts';
+import { useCartStore } from '@/stores/cartStore';
+import { mapState, mapActions } from 'pinia';
 
   export default {
     // objetos com partes reativas do componente
     data() {
       return {
-        cart: new Cart(),
         products: [
           new Product("1", "Guitarra massa dms", 20.33, new Category(1, "Instrumentos musicais")),
           new Product("2", "Violão massa dms", 2023.33, new Category(1, "Instrumentos musicais")),
@@ -19,10 +20,18 @@ import { Cart } from '@/models/Cart.ts';
       }
     },
     
+    computed: {
+      // Traz as variaveis da store para dentro desse componente
+      ...mapState(useCartStore, ['cart', 'totalItems', 'cartTotalValue']),
+    },
+    
     // metodos q podem ser chamados pelo template
     methods: {
+      // Traz as funcoes da store para ca
+      ...mapActions(useCartStore, ['addProduct', 'removeProduct', 'decrementProduct']),
+
       addItem(product: Product) {
-        this.cart.addItem(product);
+        this.addProduct(product);
       },
 
       updateQuantity(payload: { product: Product, quantity: number }) {
@@ -34,12 +43,14 @@ import { Cart } from '@/models/Cart.ts';
           const diff = payload.quantity - item.quantity;
           
           // 3. atualiza a quantidade do item no carrinho
-          item.quantity = payload.quantity;
-          this.cart.totalItems += diff;
-          
-          // 4. se a quantidade chegar a zero, remove o item do carrinho
-          if (payload.quantity === 0) {
-            this.cart.removeItem(payload.product);
+          if (diff > 0) {
+            for (let i = 0; i < diff; i++) {
+              this.addProduct(payload.product);
+            }
+          } else {
+            for (let i = 0; i < Math.abs(diff); i++) {
+              this.decrementProduct(payload.product);
+            }
           }
         }
       },
@@ -65,7 +76,7 @@ import { Cart } from '@/models/Cart.ts';
 
           // Acoes finais
           accept: () => {
-            this.cart.removeItem(product);
+            this.removeProduct(product); // agora usa a store
           },
         })
       },
@@ -127,8 +138,8 @@ import { Cart } from '@/models/Cart.ts';
         </template>
       </Card>
     </div>
-    <p>Total de itens: {{ cart.totalItems }}</p>
-    <p>Valor total no carrinho: R$ {{ cart.getTotalItemsValue().toFixed(2).replace('.', ',') }}</p>
+    <p>Total de itens: {{ totalItems }}</p>
+    <p>Valor total no carrinho: R$ {{ cartTotalValue.toFixed(2).replace('.', ',') }}</p>
   </div>
   </div>
   </div>
