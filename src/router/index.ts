@@ -1,11 +1,12 @@
 import CustomerLayout from '@/layouts/CustomerLayout.vue'
 import Home from '@/views/Home.vue'
-import Products from '@/views/Products.vue'
 import ProductDetail from '@/views/ProductDetail.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import Dashboard from '@/views/admin/Dashboard.vue'
 import ProductsAdmin from '@/views/admin/ProductsAdmin.vue'
+import CartCheckout from '@/views/CartCheckout.vue'
+import Products from '@/views/Products.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,8 +28,14 @@ const router = createRouter({
         {
           path: 'products/:id',
           name: 'product-detail',
+          props: true,
           component: ProductDetail
-        }
+        },
+        {
+          path: 'checkout',
+          name: 'cart-checkout',
+          component: CartCheckout
+        },
       ]
     },
     {

@@ -95,11 +95,15 @@ import { Cart } from '@/models/Cart.ts';
       <Button icon="pi pi-moon" severity="secondary" rounded text @click="toggleDarkMode" label="Tema"/>
       <!-- v-for é usado para iterar sobre uma lista de elementos. key é usado para identificar cada elemento, e product é a variavel que vai receber cada elemento da lista -->
      <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
-       <div v-for="product in products" :key="product.id">
+       <div v-for="product in products" :key="product.id" class="relative group h-full">
+         <!-- link invisivel que cobre o card inteiro -->
+         <!-- absolute inset-0 faz preencher 100% da area do card pai -->
+
          <!-- :product é usado para passar uma propriedade para o componente filho, e @add-to-cart é usado para receber um evento do componente filho -->
-          <div @click="goToDetail(product)">
-            <ProductCard :product="product" @add-to-cart="addItem"/>
-          </div>
+         <router-link :to="`/products/${product.id}`" class="absolute inset-0 z-10" aria-label="Ver Detalhes do Produto"/>
+
+         <!-- o componente product card nao tem z index, entao ele fica por baixo do link, por isso precisamos colocar o link como absolute e com z index 10 -->
+           <ProductCard :product="product" @add-to-cart="addItem"/>
        </div>
      </section>
   </main>

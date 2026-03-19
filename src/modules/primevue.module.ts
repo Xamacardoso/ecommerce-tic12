@@ -1,5 +1,5 @@
 import type { App } from "vue";
-import { Button, Card, InputNumber, DataView, ConfirmationService } from 'primevue'
+import { Button, Card, InputNumber, DataView, ConfirmationService, Menubar } from 'primevue'
 import ConfirmDialog from "primevue/confirmdialog";
 import PrimeVue from "primevue/config";
 import Aura from '@primeuix/themes/aura';
@@ -23,4 +23,5 @@ export default function setPrimeVue(app: App) : void {
     app.component("InputNumber", InputNumber);
     app.component("DataView", DataView);
     app.component("ConfirmDialog", ConfirmDialog);
+    app.component("Menubar", Menubar);
 }

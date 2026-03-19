@@ -15,9 +15,10 @@ import ProductCard from '@/components/card/ProductCard.vue';
 
 export default defineComponent({
     name: 'ProductDetail',
+    props: ['id'],
     data() {
         return {
-            productId: this.$route.params.id,
+            productId: this.id,
             product: {} as Product | undefined
         }
     },

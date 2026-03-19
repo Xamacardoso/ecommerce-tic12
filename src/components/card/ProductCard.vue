@@ -21,8 +21,8 @@
         </template>
 
         <template #footer>
-            <div class="flex flex-row-reverse">
-                <Button label="Adicionar ao carrinho" @click="addToCart(product)" />
+            <div class="flex flex-row-reverse relative z-20">
+                <Button label="Adicionar ao carrinho" @click.stop="addToCart(product)" />
             </div>
         </template>
     </Card>
