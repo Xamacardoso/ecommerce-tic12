@@ -5,7 +5,20 @@
       <div class="mb-8 flex items-center justify-center">
          <h1 class="text-xl font-bold text-amber-600">Admin Panel</h1>
       </div>
-      <Menu :model="items" class="w-full border-none" />
+      <Menu :model="items" class="w-full border-none">
+        <template #item="{ item, props }">
+          <router-link v-if="item.route" :to="item.route" v-slot="{ href, navigate }" custom>
+            <a :href="href" v-bind="props.action" @click="navigate" class="flex items-center">
+              <span :class="item.icon"/>
+              <span class="ml-2">{{ item.label }}</span>
+            </a>
+          </router-link>
+          <a v-else :href="item.url" :target="item.target" v-bind="props.action">
+            <span :class="item.icon"/>
+            <span class="ml-2">{{ item.label }}</span>
+          </a>
+        </template>
+      </Menu>
     </aside>
 
     <!-- Área de Conteúdo -->
@@ -32,7 +45,7 @@ const items = ref([
     label: 'Gestão',
     items: [
       { label: 'Produtos', icon: 'pi pi-box', route: '/admin/products' },
-      { label: 'Categorias', icon: 'pi pi-tags', route: '/admin/categories' }
+      { label: 'Relatórios', icon: 'pi pi-chart-bar', route: '/admin/reports' }
     ]
   },
   {

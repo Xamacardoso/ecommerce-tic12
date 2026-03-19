@@ -13,7 +13,7 @@
             <!-- Area para o carrinho -->
             <template #end>
                 <router-link to="/checkout" class="flex items-center gap-3 p-2 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer no-underline text-inherit">
-                    <i class="pi pi-shopping-cart text-xl" v-badge="totalItems > 0 ? totalItems : null" />
+                    <i class="pi pi-shopping-cart text-xl" />
                     <span class="font-bold hidden sm:inline">Carrinho ({{ totalItems }})</span>
                 </router-link>
             </template>

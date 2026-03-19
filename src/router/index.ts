@@ -7,6 +7,7 @@ import Dashboard from '@/views/admin/Dashboard.vue'
 import ProductsAdmin from '@/views/admin/ProductsAdmin.vue'
 import CartCheckout from '@/views/CartCheckout.vue'
 import Products from '@/views/Products.vue'
+import Reports from '@/views/admin/Reports.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,6 +58,10 @@ const router = createRouter({
         {
           path: 'products',
           component: ProductsAdmin,
+        },
+        {
+          path: 'reports',
+          component: Reports,
         }
 
       ]
