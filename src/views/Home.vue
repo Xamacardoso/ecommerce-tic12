@@ -8,6 +8,7 @@ import CartItem from '@/components/card/CartItem.vue';
 import { Cart } from '@/models/Cart.ts';
 import { useCartStore } from '@/stores/cartStore';
 import { mapState, mapActions } from 'pinia';
+import { ProductRest } from '@/services/rest/product.rest';
 
   export default {
     // objetos com partes reativas do componente
@@ -23,6 +24,10 @@ import { mapState, mapActions } from 'pinia';
     computed: {
       // Traz as variaveis da store para dentro desse componente
       ...mapState(useCartStore, ['cart', 'totalItems', 'cartTotalValue']),
+
+      rest(){
+        return new ProductRest();
+      }
     },
     
     // metodos q podem ser chamados pelo template
@@ -87,7 +92,24 @@ import { mapState, mapActions } from 'pinia';
 
       goToDetail(product: Product){
         this.$router.push({path: `/products/${product.id}`})
+      },
+
+      getAllProducts(){
+        const params = {
+          page: 1,
+          limit: 10,
+        }
+
+        this.rest.getAllProducts(params).then((res) => {
+          console.log(res, "respose");
+          // this.products = res;
+        })
       }
+    },
+
+    // hook que é chamado quando o componente é montado, ou seja, quando ele é renderizado pela primeira vez
+    mounted() {
+      this.getAllProducts();
     },
 
     components: {

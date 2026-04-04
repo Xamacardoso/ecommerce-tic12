@@ -71,37 +71,38 @@ const router = createRouter({
 
 // implementacao de guards, que sao metodos que verificam se o usuario tem permissao para acessar uma rota
 router.beforeEach((to, from, next) => {
-  if (to?.meta?.auth) {
-    // Mock de token para implementar os guards depois
-    const userSession = {
-      isAuth: true,
-      role: 'admin'
-    }
+  // if (to?.meta?.auth) {
+  //   // Mock de token para implementar os guards depois
+  //   const userSession = {
+  //     isAuth: true,
+  //     role: 'admin'
+  //   }
 
-    if (userSession.isAuth) {
-      if (to.meta.role) {
-        const requiredRoles = to.meta.role as string[];
-        if (requiredRoles.includes(userSession.role)) {
-          next();
-          return;
-        } else {
-          next('/');
-          return;
-        }
-      } 
+  //   if (userSession.isAuth) {
+  //     if (to.meta.role) {
+  //       const requiredRoles = to.meta.role as string[];
+  //       if (requiredRoles.includes(userSession.role)) {
+  //         next();
+  //         return;
+  //       } else {
+  //         next('/');
+  //         return;
+  //       }
+  //     } 
       
-      // Se exige auth mas não exige role (checkout), deixa passar
-      next();
-      return;
+  //     // Se exige auth mas não exige role (checkout), deixa passar
+  //     next();
+  //     return;
 
-    } else {
-      next('/');
-      return;
-    }
-  } 
-  else {
-    next();
-    return;
-  }
+  //   } else {
+  //     next('/');
+  //     return;
+  //   }
+  // } 
+  // else {
+  //   next();
+  //   return;
+  // }
+  next();
 })
 export default router
