@@ -18,7 +18,7 @@ export class AxiosConfig {
         this.$instance.interceptors.request.use((config) => {
             // aqui podemos adicionar headers, verificar token, etc.
             const token = localStorage.getItem('token');
-            if (token) {
+            if (token && config.headers) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
             return config;

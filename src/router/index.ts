@@ -8,10 +8,16 @@ import ProductsAdmin from '@/views/admin/ProductsAdmin.vue'
 import CartCheckout from '@/views/CartCheckout.vue'
 import Products from '@/views/Products.vue'
 import Reports from '@/views/admin/Reports.vue'
+import Register from '@/views/Register.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/register',
+      name: 'register',
+      component: Register
+    },
     {
       path: '/',
       component: CustomerLayout,
