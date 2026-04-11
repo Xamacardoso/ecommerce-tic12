@@ -35,6 +35,7 @@ import { useVuelidate } from '@vuelidate/core';
 import { required, minLength, maxLength, email, sameAs } from '@vuelidate/validators';
 import { UserRegisterRest } from '@/services/rest/userRegister.rest';
 import Error from '@/components/Error.vue';
+import { useAuthStore } from '@/stores/auth';
 
 export default defineComponent({
     name: "Register",
@@ -47,7 +48,9 @@ export default defineComponent({
     },
     // setup é uma função que é chamada antes de criar o componente. É aqui que vamos colocar o vuelidate, que é uma biblioteca de validação de formulários
     setup() {
+        const authStore = useAuthStore();
         return {
+            authStore,
             v$: useVuelidate()
         }
     },
@@ -100,10 +103,18 @@ export default defineComponent({
             this.loading = true;
             this.rest.registerUser(body)
                 .then((response) => {
-                    console.log(response);
+                    this.authStore.setUser(response.user);
+                    this.authStore.setAccessToken(response.tokens.accessToken);
+                    this.authStore.setRefreshToken(response.tokens.refreshToken);
+
+                    if (this.authStore.user.role === "CUSTOMER") {
+                        this.$router.push({ path: "/history" });
+                    } else if (this.authStore.user.role === "ADMIN") {
+                        this.$router.push({ path: "/admin" });
+                    }
                 })
                 .catch((error) => {
-                    console.log(error);
+                    console.log("Deu erro na requisicao de registro");
                 })
                 .finally(() => {
                     this.loading = false;

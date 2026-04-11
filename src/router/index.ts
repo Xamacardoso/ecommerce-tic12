@@ -9,14 +9,28 @@ import CartCheckout from '@/views/CartCheckout.vue'
 import Products from '@/views/Products.vue'
 import Reports from '@/views/admin/Reports.vue'
 import Register from '@/views/Register.vue'
+import Login from '@/views/Login.vue'
+import History from '@/views/CustomerHistory.vue'
+import CustomerHistory from '@/views/CustomerHistory.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/login',
+      name: 'login',
+      component: Login,
+      meta: {
+        auth: false
+      }
+    },
+    {
       path: '/register',
       name: 'register',
-      component: Register
+      component: Register,
+      meta: {
+        auth: false
+      }
     },
     {
       path: '/',
@@ -46,6 +60,15 @@ const router = createRouter({
           },
           component: CartCheckout
         },
+        {
+          path: 'history',
+          name: 'history',
+          component: CustomerHistory,
+          meta: {
+            auth: true,
+            role: ['CUSTOMER']
+          }
+        }
       ]
     },
     {
@@ -71,7 +94,7 @@ const router = createRouter({
         }
 
       ]
-    }
+    },
   ],
 })
 

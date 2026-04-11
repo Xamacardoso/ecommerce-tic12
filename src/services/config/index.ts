@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
 
 // classe responsavel por configurar o axios
@@ -17,7 +18,7 @@ export class AxiosConfig {
         // intercepta a requisição antes de ser enviada
         this.$instance.interceptors.request.use((config) => {
             // aqui podemos adicionar headers, verificar token, etc.
-            const token = localStorage.getItem('token');
+            const token = useAuthStore().accessToken;
             if (token && config.headers) {
                 config.headers.Authorization = `Bearer ${token}`;
             }

@@ -9,6 +9,6 @@ export class UserRegisterRest {
         password: string;
     }) : Promise<any> {
         const path = "/auth/register";
-        return this.httpClient.post(path, body);
+        return await this.httpClient.post(path, body);
     }
 }

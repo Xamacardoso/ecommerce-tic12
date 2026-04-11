@@ -12,16 +12,16 @@ export class HttpClient implements IHttpClient {
         this.baseURL = baseURL;
     }
     async get(path: string, params: any, baseURL?: string): Promise<any> {
-        return api.get(path, {params,baseURL}).then((res)=>res.data);
+        return api.get(path, {params,baseURL}).then((res)=>res.data.data);
     }
     async post(path: string, body: any, baseURL?: string): Promise<any> {
-        return api.post(path, body, {baseURL}).then((res)=>res.data);
+        return api.post(path, body, {baseURL}).then((res)=>res.data.data);
     }
     async put(path: string, body: any, baseURL?: string): Promise<any> {
-        return api.put(path, body, {baseURL}).then((res)=>res.data);
+        return api.put(path, body, {baseURL}).then((res)=>res.data.data);
     }
     async delete(path: string, params: any, baseURL?: string): Promise<any> {
-        return api.delete(path, {params,baseURL}).then((res)=>res.data);
+        return api.delete(path, {params,baseURL}).then((res)=>res.data.data);
     }
 }
 
