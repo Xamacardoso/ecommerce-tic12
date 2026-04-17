@@ -1,7 +1,7 @@
 <template>
     <div class="p-8">
         <h1 class="text-3xl font-bold mb-6">Carrinho de Compras</h1>
-        <div v-if="cartItems.products.length > 0" class="flex flex-col gap-6"></div>
+        <div v-if="cartItems.cartItems.length > 0" class="flex flex-col gap-6"></div>
     </div>
 </template>
 

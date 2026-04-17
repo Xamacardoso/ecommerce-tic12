@@ -41,7 +41,7 @@ import { ProductRest } from '@/services/rest/product.rest';
 
       updateQuantity(payload: { product: Product, quantity: number }) {
         // 1. acha o item no carrinho
-        const item = this.cart.products.find((item) => item.product.id === payload.product.id);
+        const item = this.cart.cartItems.find((item) => item.product.id === payload.product.id);
         
         // 2. calcula diferenca para atualizar o totalitems geral
         if (item) {
@@ -141,8 +141,8 @@ import { ProductRest } from '@/services/rest/product.rest';
      </section>
   </main>
   <div class="flex flex-col gap-4">
-    <div v-if="cart.products.length > 0" class="flex items-center justify-start" >
-      <DataView :value="cart.products" class="w-1/2">
+    <div v-if="cart.cartItems.length > 0" class="flex items-center justify-start" >
+      <DataView :value="cart.cartItems" class="w-1/2">
         <template #header>
           <h1 class="text-center text-xl">Carrinho</h1>
         </template>

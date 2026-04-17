@@ -9,8 +9,9 @@ export const useCartStore = defineStore('cart', () => {
 
     // Getters (Computados, significa que dependem de outros valores e sao reativos)
     const totalItems = computed(() => cart.value.totalItems);
-    const cartProducts = computed(() => cart.value.products);
+    const cartItems = computed(() => cart.value.cartItems);
     const cartTotalValue = computed(() => cart.value.getTotalItemsValue());
+    const existsItems = computed(() => cart.value.cartItems.length > 0);
 
     // Actions (metodos que alteram o estado)
     function addProduct(product: Product) {
@@ -18,18 +19,19 @@ export const useCartStore = defineStore('cart', () => {
     }
 
     function removeProduct(product: Product) {
-        cart.value.removeItem(product);
+        cart.value.removeItem(product.id);
     }
 
     function decrementProduct(product: Product) {
-        cart.value.decrementItem(product);
+        cart.value.decrementItem(product.id);
     }
 
     return {
         cart,
         totalItems,
-        cartProducts,
+        cartItems,
         cartTotalValue,
+        existsItems,
         addProduct,
         removeProduct,
         decrementProduct

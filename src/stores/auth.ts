@@ -6,7 +6,7 @@ import { ref } from "vue";
 export const useAuthStore = defineStore('auth', {
     // State: é a função que retorna o estado inicial do store
     state: () => ({
-        user: new User(),
+        user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : new User('1', 'Testando', 'testona@email.com', 'ADMIN'),
 
         // toda vez que a pagina for recarregada, ele vai pegar o token do localStorage
         accessToken: localStorage.getItem('accessToken') as null | string,
