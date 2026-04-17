@@ -10,8 +10,8 @@ import Products from '@/views/Products.vue'
 import Reports from '@/views/admin/Reports.vue'
 import Register from '@/views/Register.vue'
 import Login from '@/views/Login.vue'
-import History from '@/views/CustomerHistory.vue'
 import CustomerHistory from '@/views/CustomerHistory.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -92,7 +92,6 @@ const router = createRouter({
           path: 'reports',
           component: Reports,
         }
-
       ]
     },
   ],
@@ -100,38 +99,38 @@ const router = createRouter({
 
 // implementacao de guards, que sao metodos que verificam se o usuario tem permissao para acessar uma rota
 router.beforeEach((to, from, next) => {
-  // if (to?.meta?.auth) {
-  //   // Mock de token para implementar os guards depois
-  //   const userSession = {
-  //     isAuth: true,
-  //     role: 'admin'
-  //   }
+  const authStore = useAuthStore();
+  const isAuthenticated = authStore.isAuthenticated;
+  const userRole = authStore.getRole;
 
-  //   if (userSession.isAuth) {
-  //     if (to.meta.role) {
-  //       const requiredRoles = to.meta.role as string[];
-  //       if (requiredRoles.includes(userSession.role)) {
-  //         next();
-  //         return;
-  //       } else {
-  //         next('/');
-  //         return;
-  //       }
-  //     } 
-      
-  //     // Se exige auth mas não exige role (checkout), deixa passar
-  //     next();
-  //     return;
+  // Se a rota exige autenticação
+  if (to.meta.auth) {
+    if (!isAuthenticated) {
+      // Se não estiver logado, redireciona para login e salva a rota pretendida
+      next({ name: 'login', query: { redirect: to.fullPath } });
+      return;
+    }
 
-  //   } else {
-  //     next('/');
-  //     return;
-  //   }
-  // } 
-  // else {
-  //   next();
-  //   return;
-  // }
+    // Se estiver logado, verifica se a rota exige uma role específica
+    if (to.meta.role) {
+      const allowedRoles = (to.meta.role as string[]).map(r => r.toUpperCase());
+      if (userRole && allowedRoles.includes(userRole.toUpperCase())) {
+        next();
+      } else {
+        // Se não tiver permissão, volta para a home
+        next('/');
+      }
+      return;
+    }
+  }
+
+  // Se o usuário já estiver logado e tentar ir para login/register, manda para a home
+  if (to.meta.auth === false && isAuthenticated) {
+    next('/');
+    return;
+  }
+
   next();
 })
+
 export default router

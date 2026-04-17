@@ -10,17 +10,32 @@
                 </RouterLink>
             </template>
 
-            <!-- Area para o carrinho -->
+            <!-- Area para o carrinho e usuário -->
             <template #end>
-                <CartComponent />
-                <router-link to="/checkout" class="flex items-center gap-3 p-2 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer no-underline text-inherit">
-                    <i class="pi pi-shopping-cart text-xl" />
-                    <span class="font-bold hidden sm:inline">Carrinho ({{ totalItems }})</span>
-                </router-link>
+                <div class="flex items-center gap-4">
+                    <CartComponent />
+                    
+                    <router-link to="/checkout" class="flex items-center gap-3 p-2 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer no-underline text-inherit">
+                        <i class="pi pi-shopping-cart text-xl" />
+                        <span class="font-bold hidden sm:inline">Carrinho ({{ totalItems }})</span>
+                    </router-link>
+
+                    <Divider layout="vertical" />
+
+                    <div v-if="!authStore.isAuthenticated" class="flex items-center gap-2">
+                        <Button label="Login" icon="pi pi-sign-in" text @click="$router.push('/login')" />
+                    </div>
+                    
+                    <div v-else class="flex items-center gap-3">
+                        <Avatar icon="pi pi-user" shape="circle" class="bg-primary text-white" />
+                        <span class="font-medium hidden md:inline">{{ authStore.user?.name }}</span>
+                        <Button icon="pi pi-sign-out" severity="danger" text @click="handleLogout" v-tooltip.bottom="'Sair'" />
+                    </div>
+                </div>
             </template>
 
         </Menubar>
-        <div class="flex-1">
+        <div class="flex-1 p-4">
             <Breadcrumb :home="home" :model="breadcrumbs" class="mb-4 bg-transparent border-none p-0"/>
             <RouterView />
         </div>
@@ -28,14 +43,16 @@
 </template>
 
 <script setup lang="ts">
-// um script setup é um script que é executado no momento da montagem do componente
 import { ref, computed } from 'vue';
 import { useCartStore } from '@/stores/cartStore';
+import { useAuthStore } from '@/stores/auth';
 import { storeToRefs } from 'pinia';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import CartComponent from '@/components/cart/index.vue';
 
 const cartStore = useCartStore();
+const authStore = useAuthStore();
+const router = useRouter();
 const { totalItems } = storeToRefs(cartStore);
 
 const items = ref([
@@ -49,17 +66,22 @@ const home = ref({
   to: '/'
 });
 
-// Logica para transformar rotas em itens de breadcrumb
+const handleLogout = () => {
+    authStore.logout();
+    router.push('/login');
+};
+
 const breadcrumbs = computed(() => {
   return route.matched
-    .filter(path => path.name) // filtrando só as que tem nome
+    .filter(path => path.name)
     .map(path => {
       return {
-        label: String(path.name).charAt(0).toUpperCase() + String(path.name).slice(1), // formatando o nome
+        label: String(path.name).charAt(0).toUpperCase() + String(path.name).slice(1),
         route: path.path
       }
     });
 });
 </script>
+
 
 <style></style>

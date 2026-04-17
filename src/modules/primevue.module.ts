@@ -1,9 +1,14 @@
 import type { App } from "vue";
-import { Button, Card, InputNumber, DataView, ConfirmationService, Menubar, Menu, DataTable, Column, Breadcrumb, InputText, Password } from 'primevue'
+import { 
+    Button, Card, InputNumber, DataView, ConfirmationService, 
+    Menubar, Menu, DataTable, Column, Breadcrumb, 
+    InputText, Password, Toast, ToastService, Divider, Avatar
+} from 'primevue'
 import ConfirmDialog from "primevue/confirmdialog";
 import PrimeVue from "primevue/config";
 import Aura from '@primeuix/themes/aura';
 import BadgeDirective from "primevue/badgedirective";
+import Tooltip from 'primevue/tooltip';
 
 export default function setPrimeVue(app: App) : void {
     app.use(PrimeVue, {
@@ -15,7 +20,8 @@ export default function setPrimeVue(app: App) : void {
         }
     });
 
-    app.use(ConfirmationService); // habilitando o serviço de confirmacao
+    app.use(ConfirmationService); 
+    app.use(ToastService);
 
     // componentes
     app.component("Button", Button);
@@ -28,10 +34,13 @@ export default function setPrimeVue(app: App) : void {
     app.component("DataTable", DataTable);
     app.component("Column", Column);
     app.component("Breadcrumb", Breadcrumb);
-
-    // usa o badge
-    app.directive("badge", BadgeDirective);
-
     app.component("InputText", InputText);
     app.component("Password", Password);
+    app.component("Toast", Toast);
+    app.component("Divider", Divider);
+    app.component("Avatar", Avatar);
+
+    // diretivas
+    app.directive("badge", BadgeDirective);
+    app.directive("tooltip", Tooltip);
 }

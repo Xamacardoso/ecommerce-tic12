@@ -1,129 +1,124 @@
 <template>
-    <main class="flex flex-col items-center justify-center w-screen h-screen">
-        <form class="flex flex-col gap-2 max-w-[400px] border p-8" @submit.prevent="registerUser">
-            <header>{{ "Faça seu cadastro" }}</header>
-            <label for="name" class="flex flex-col gap-2">
-                Nome
-                <!-- v-model faz a ligação entre o input e a variável do data. gerencia o estado do input -->
-                <InputText v-model="form.name" />
-                <Error :value="v$.form" :field="'name'" />
-            </label>
-            <label for="email" class="flex flex-col gap-2">
-                Email
-                <InputText v-model="form.email" />
-                <Error :value="v$.form" :field="'email'" />
-            </label>
-            <label for="password" class="flex flex-col gap-2">
-                Senha
-                <Password v-model="form.password" :feedback="false" :toggleMask="true"/>
-                <Error :value="v$.form" :field="'password'" />
-            </label>
-            <label for="confirmPassword" class="flex flex-col gap-2">
-                Confirmar Senha
-                <Password v-model="form.confirmPassword" :feedback="false" :toggleMask="true"/>
-                <Error :value="v$.form" :field="'confirmPassword'" />
-            </label>
-            <Button type="submit" :loading="loading">Cadastrar</Button>
-        </form>
+    <main class="flex flex-col items-center justify-center min-h-screen bg-neutral-50 px-4">
+        <Toast />
+        <Card class="w-full max-w-md shadow-lg my-8">
+            <template #title>
+                <div class="text-2xl font-bold text-center text-neutral-800">Crie sua conta</div>
+            </template>
+            <template #content>
+                <form class="flex flex-col gap-4" @submit.prevent="registerUser">
+                    <div class="flex flex-col gap-2">
+                        <label for="name" class="font-medium">Nome Completo</label>
+                        <InputText id="name" v-model="form.name" :class="{'p-invalid': v$.form.name.$error}" placeholder="Seu nome" />
+                        <Error :value="v$.form" field="name" />
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label for="email" class="font-medium">Email</label>
+                        <InputText id="email" v-model="form.email" :class="{'p-invalid': v$.form.email.$error}" placeholder="exemplo@email.com" />
+                        <Error :value="v$.form" field="email" />
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label for="password" class="font-medium">Senha</label>
+                        <Password id="password" v-model="form.password" :class="{'p-invalid': v$.form.password.$error}" :toggleMask="true" placeholder="Mínimo 6 caracteres" />
+                        <Error :value="v$.form" field="password" />
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label for="confirmPassword" class="font-medium">Confirmar Senha</label>
+                        <Password id="confirmPassword" v-model="form.confirmPassword" :class="{'p-invalid': v$.form.confirmPassword.$error}" :feedback="false" :toggleMask="true" placeholder="Repita sua senha" />
+                        <Error :value="v$.form" field="confirmPassword" />
+                    </div>
+
+                    <Button type="submit" :loading="authStore.loading" class="w-full mt-2" label="Cadastrar" icon="pi pi-user-plus" />
+                    
+                    <div class="text-center mt-4 text-sm text-neutral-600">
+                        Já tem uma conta? 
+                        <router-link to="/login" class="text-primary font-bold hover:underline">Faça login</router-link>
+                    </div>
+                </form>
+            </template>
+        </Card>
     </main>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import RegisterForm from '@/models/register.model';
 import { useVuelidate } from '@vuelidate/core';
-import { required, minLength, maxLength, email, sameAs } from '@vuelidate/validators';
-import { UserRegisterRest } from '@/services/rest/userRegister.rest';
+import { required, minLength, email, sameAs } from '@vuelidate/validators';
 import Error from '@/components/Error.vue';
+import RegisterForm from '@/models/register.model';
 import { useAuthStore } from '@/stores/auth';
 
 export default defineComponent({
     name: "Register",
+    components: { Error },
+    setup() {
+        return {
+            v$: useVuelidate(),
+            authStore: useAuthStore()
+        }
+    },
     data() {
         return {
-            form: new RegisterForm(),
-            rest: new UserRegisterRest(),
-            loading: false
+            form: new RegisterForm()
         }
     },
-    // setup é uma função que é chamada antes de criar o componente. É aqui que vamos colocar o vuelidate, que é uma biblioteca de validação de formulários
-    setup() {
-        const authStore = useAuthStore();
-        return {
-            authStore,
-            v$: useVuelidate()
-        }
-    },
-
-    // Validacoes do formulario
     validations() {
         return {
             form: {
-                name: {
-                    required,
-                    minLength: minLength(3),
-                    maxLength: maxLength(100)
-                },
-                email: {
-                    required,
-                    email
-                },
-                password: {
-                    required,
-                    minLength: minLength(6),
-                    maxLength: maxLength(100)
-                },
-                confirmPassword: {
-                    required,
-                    minLength: minLength(6),
-                    maxLength: maxLength(100),
-                    sameAs: sameAs(this.form.password)
+                name: { required, minLength: minLength(3) },
+                email: { required, email },
+                password: { required, minLength: minLength(6) },
+                confirmPassword: { 
+                    required, 
+                    sameAsPassword: sameAs(this.form.password) 
                 }
             }
         }
     },
-
     methods: {
         async registerUser() {
             const isValid = await this.v$.$validate();
+            
             if (!isValid) {
-                console.log("requisicao falhou")
+                this.$toast.add({ 
+                    severity: 'error', 
+                    summary: 'Erro de validação', 
+                    detail: 'Por favor, corrija os erros no formulário.', 
+                    life: 3000 
+                });
                 return;
             }
 
-            // Monta o body para a requisicao
-            const body = {
-                name: this.form.name,
-                email: this.form.email,
-                password: this.form.password
-            };
-
-            // Faz a requisicao
-            console.log("REquisicao de usuario");
-            this.loading = true;
-            this.rest.registerUser(body)
-                .then((response) => {
-                    this.authStore.setUser(response.user);
-                    this.authStore.setAccessToken(response.tokens.accessToken);
-                    this.authStore.setRefreshToken(response.tokens.refreshToken);
-
-                    if (this.authStore.user.role === "CUSTOMER") {
-                        this.$router.push({ path: "/history" });
-                    } else if (this.authStore.user.role === "ADMIN") {
-                        this.$router.push({ path: "/admin" });
-                    }
-                })
-                .catch((error) => {
-                    console.log("Deu erro na requisicao de registro");
-                })
-                .finally(() => {
-                    this.loading = false;
+            try {
+                await this.authStore.register({
+                    name: this.form.name,
+                    email: this.form.email,
+                    password: this.form.password
                 });
-        }
-    },
 
-    components: {
-        Error
+                this.$toast.add({ 
+                    severity: 'success', 
+                    summary: 'Sucesso', 
+                    detail: 'Conta criada com sucesso!', 
+                    life: 3000 
+                });
+
+                setTimeout(() => {
+                    this.$router.push('/');
+                }, 1000);
+
+            } catch (error: any) {
+                this.$toast.add({ 
+                    severity: 'error', 
+                    summary: 'Erro', 
+                    detail: error.message || 'Erro ao realizar cadastro.', 
+                    life: 3000 
+                });
+            }
+        }
     }
 })
-</script>
+</script>

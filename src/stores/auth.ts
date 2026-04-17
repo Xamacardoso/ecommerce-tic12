@@ -1,57 +1,102 @@
 import { User } from "@/models/user.model";
 import { defineStore } from "pinia";
-import { ref } from "vue";
 
-// Criando store com Options API, que é a forma mais tradicional
+// Criando store com Options API para gerenciamento centralizado de autenticação
 export const useAuthStore = defineStore('auth', {
-    // State: é a função que retorna o estado inicial do store
+    // State: fonte única da verdade para o status de autenticação
     state: () => ({
-        user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : new User('1', 'Testando', 'testona@email.com', 'ADMIN'),
-
-        // toda vez que a pagina for recarregada, ele vai pegar o token do localStorage
-        accessToken: localStorage.getItem('accessToken') as null | string,
-        refreshToken: localStorage.getItem('refreshToken') as null | string
+        user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null as User | null,
+        accessToken: localStorage.getItem('accessToken') as string | null,
+        refreshToken: localStorage.getItem('refreshToken') as string | null,
+        loading: false
     }),
 
-    // Getters: são funções que retornam o valor do estado
+    // Getters: computados para acesso fácil e reativo ao estado
     getters: {
         getUser: (state) => state.user,
         getUserEmail: (state) => state.user?.email ?? 'Sem email',
         getRole: (state) => state.user?.role ?? null,
-        isAuthenticated: (state) => state.accessToken !== null
+        isAuthenticated: (state) => !!state.accessToken
     },
 
-    // Actions: são funções que modificam o estado do store (global)
+    // Actions: métodos para modificar o estado (simulando chamadas de API)
     actions: {
-        setUser(user: User) {
-            this.user = user
+        async login(credentials: { email: string; password: any }) {
+            this.loading = true;
+            
+            // Simula um delay de rede de 1.5 segundos
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // Simulação: se o email for 'admin@email.com', loga como ADMIN, senão CUSTOMER
+                    const role = credentials.email.includes('admin') ? 'ADMIN' : 'CUSTOMER';
+                    const mockUser = new User('1', 'Usuário Teste', credentials.email, role);
+                    const mockToken = 'mock-jwt-token-' + Math.random().toString(36).substring(7);
+
+                    if (credentials.email && credentials.password) {
+                        this.setUser(mockUser);
+                        this.setAccessToken(mockToken);
+                        this.loading = false;
+                        resolve(mockUser);
+                    } else {
+                        this.loading = false;
+                        reject(new Error('Credenciais inválidas'));
+                    }
+                }, 1500);
+            });
+        },
+
+        async register(userData: { name: string, email: string, password: any }) {
+            this.loading = true;
+            
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    const mockUser = new User('1', userData.name, userData.email, 'CUSTOMER');
+                    const mockToken = 'mock-jwt-token-' + Math.random().toString(36).substring(7);
+
+                    if (userData.email && userData.password) {
+                        this.setUser(mockUser);
+                        this.setAccessToken(mockToken);
+                        this.loading = false;
+                        resolve(mockUser);
+                    } else {
+                        this.loading = false;
+                        reject(new Error('Erro ao registrar usuário'));
+                    }
+                }, 1500);
+            });
+        },
+
+        setUser(user: User | null) {
+            this.user = user;
+            if (user) {
+                localStorage.setItem('user', JSON.stringify(user));
+            } else {
+                localStorage.removeItem('user');
+            }
         },
         
-        setUserEmail(email: string) {
-            this.user!.email = email
-        },   
-
-        setAccessToken(token: string) {
-            this.accessToken = token
-
-            // Armazena o token no localStorage para que ele fique disponivel mesmo se der um refresh na pagina
-            localStorage.setItem('accessToken', token)
+        setAccessToken(token: string | null) {
+            this.accessToken = token;
+            if (token) {
+                localStorage.setItem('accessToken', token);
+            } else {
+                localStorage.removeItem('accessToken');
+            }
         },
 
-        setRefreshToken(token: string) {
-            this.refreshToken = token
-
-            // Persistencia entre refresh de pagina
-            localStorage.setItem('refreshToken', token)
+        setRefreshToken(token: string | null) {
+            this.refreshToken = token;
+            if (token) {
+                localStorage.setItem('refreshToken', token);
+            } else {
+                localStorage.removeItem('refreshToken');
+            }
         },
 
         logout() {
-            this.user = new User()
-            this.accessToken = null
-            this.refreshToken = null
-            localStorage.removeItem('accessToken')
-            localStorage.removeItem('refreshToken')
+            this.setUser(null);
+            this.setAccessToken(null);
+            this.setRefreshToken(null);
         }
     }
-    
-})
+})
